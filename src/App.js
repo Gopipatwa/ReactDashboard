@@ -1,23 +1,42 @@
-import logo from './logo.svg';
 import './App.css';
+import {BrowserRouter,Route,Routes} from 'react-router-dom'
+import React,{useState} from 'react';
+import Dashboard from './components/Dashboard/Dashboard';
+import Preferences from './components/Preferences/Preferences';
+import Login from './components/Login/Login';
+import useToken from './useToken';
+
+function setToken(userToken) {
+  sessionStorage.setItem('token', JSON.stringify(userToken));
+}
+
+function getToken() {
+  const tokenString = sessionStorage.getItem('token');
+  const userToken = JSON.parse(tokenString);
+  return userToken?.token
+}
 
 function App() {
+  // const [token, setToken] = useState();
+  // const token = getToken();
+  const { token, setToken } = useToken();
+  const [check,setCheck] = useState(true);
+
+  if(!token) {
+    // setCheck(false)
+    return <Login setToken={setToken} />
+  }
+  console.log(check);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Application</h1>
+      <BrowserRouter>
+      <Routes>
+        <Route path='/dashboard' caseSensitive={true} element={<Dashboard check={check}/>} />
+        <Route path='/preferences' element={<Preferences />} />
+        <Route path='/login' element={<Login setToken={setToken}/>} />
+      </Routes>
+      </BrowserRouter>
     </div>
   );
 }
